@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory = $false)]
     $deploymentSource = $PSScriptRoot,
     [Parameter(Mandatory = $false)]
-    $deploymentTarget = $env:DEPLOYMENT_TARGET,
+    $deploymentTarget = 'd:\home\data\SitePackages',
     $deploymentTemp = $env:DEPLOYMENT_TEMP,
     $project = "$deploymentSource\vandelay.web\vandelay.web.csproj",
     $testProject = "$deploymentSource\vandelay.xunittests\vandelay.xunittests.csproj"
