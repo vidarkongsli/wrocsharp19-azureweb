@@ -8,6 +8,7 @@ param(
     $testProject = "$deploymentSource\vandelay.xunittests\vandelay.xunittests.csproj"
 )
 $ErrorActionPreference = 'stop'
+$global:ProgressPreference = 'silentlycontinue'
 
 function exitWithMessageOnError($errorMessage) {
     if ($? -eq $false) {
@@ -30,6 +31,11 @@ exitWithMessageOnError "Tests failed"
 dotnet publish --no-restore --output $deploymentTemp $project
 exitWithMessageOnError "Publish failed"
 
-if (-not(Test-Path $deploymentTarget)) { mkdir $deploymentTarget | Out-Null }
+mkdir $deploymentTarget -Force | Out-Null
+Write-Output "Compressing content from $deploymentTemp\* to $targetFile"
 Compress-Archive -Path $deploymentTemp -DestinationPath $targetFile
 exitWithMessageOnError "Compression failed"
+
+# 4. Set package ref.
+$targetFile | Out-File -FilePath "$deploymentTarget\packagename.txt" -Encoding ascii
+exitWithMessageOnError "Application publish failed"
