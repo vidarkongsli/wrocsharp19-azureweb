@@ -22,11 +22,11 @@ $targetFile = "$($projectName)-$(Get-Date -Format FileDateTime).zip"
 $targetFilePath = "$deploymentDirectory\$targetFile"
 
 # 1. Run tests
-dotnet test $testProject
+dotnet test --configuration Release $testProject
 exitWithMessageOnError "Tests failed"
 
 # 2. Build and publish
-dotnet publish --no-restore --output $deploymentTemp $project
+dotnet publish --configuration Release --output $deploymentTemp $project
 exitWithMessageOnError "Publish failed"
 
 # 3. Make zip file
