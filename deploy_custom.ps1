@@ -20,10 +20,7 @@ function exitWithMessageOnError($errorMessage) {
 $projectName = (split-path $project -Leaf).Replace('.csproj', '')
 $targetFile = "$deploymentTarget\$($projectName)-$(Get-Date -Format FileDateTime).zip"
 
-# 1. Restore nuget packages
-dotnet restore $project
-exitWithMessageOnError "Restore failed"
-
+# 1. Run tests
 dotnet test $testProject
 exitWithMessageOnError "Tests failed"
 
@@ -31,9 +28,10 @@ exitWithMessageOnError "Tests failed"
 dotnet publish --no-restore --output $deploymentTemp $project
 exitWithMessageOnError "Publish failed"
 
-mkdir $deploymentTarget -Force | Out-Null
+# 3. Make zip file
+mkdir $deploymentTarget -ErrorAction SilentlyContinue | Out-Null
 Write-Output "Compressing content from $deploymentTemp\* to $targetFile"
-Compress-Archive -Path $deploymentTemp -DestinationPath $targetFile
+Compress-Archive -Path $deploymentTemp\* -DestinationPath $targetFile
 exitWithMessageOnError "Compression failed"
 
 # 4. Set package ref.
