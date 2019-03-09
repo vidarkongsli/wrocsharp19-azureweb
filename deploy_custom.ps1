@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory = $false)]
     $deploymentSource = $PSScriptRoot,
     [Parameter(Mandatory = $false)]
-    $deploymentTarget = 'd:\home\data\SitePackages',
+    $deploymentDirectory = 'd:\home\data\SitePackages',
     $deploymentTemp = $env:DEPLOYMENT_TEMP,
     $project = "$deploymentSource\vandelay.web\vandelay.web.csproj",
     $testProject = "$deploymentSource\vandelay.xunittests\vandelay.xunittests.csproj"
@@ -18,7 +18,7 @@ function exitWithMessageOnError($errorMessage) {
 }
 
 $projectName = (split-path $project -Leaf).Replace('.csproj', '')
-$targetFile = "$deploymentTarget\$($projectName)-$(Get-Date -Format FileDateTime).zip"
+$targetFile = "$deploymentDirectory\$($projectName)-$(Get-Date -Format FileDateTime).zip"
 
 # 1. Run tests
 dotnet test $testProject
@@ -29,11 +29,12 @@ dotnet publish --no-restore --output $deploymentTemp $project
 exitWithMessageOnError "Publish failed"
 
 # 3. Make zip file
-mkdir $deploymentTarget -ErrorAction SilentlyContinue | Out-Null
+mkdir $deploymentDirectory -ErrorAction SilentlyContinue | Out-Null
 Write-Output "Compressing content from $deploymentTemp\* to $targetFile"
 Compress-Archive -Path $deploymentTemp\* -DestinationPath $targetFile
 exitWithMessageOnError "Compression failed"
 
 # 4. Set package ref.
-$targetFile | Out-File -FilePath "$deploymentTarget\packagename.txt" -Encoding ascii
+$targetFile | Out-File -FilePath "$deploymentDirectory\packagename.txt" `
+    -Encoding ASCII -NoNewline
 exitWithMessageOnError "Application publish failed"
