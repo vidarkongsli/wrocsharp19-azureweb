@@ -18,7 +18,8 @@ function exitWithMessageOnError($errorMessage) {
 }
 
 $projectName = (split-path $project -Leaf).Replace('.csproj', '')
-$targetFile = "$deploymentDirectory\$($projectName)-$(Get-Date -Format FileDateTime).zip"
+$targetFile = "$($projectName)-$(Get-Date -Format FileDateTime).zip"
+$targetFilePath = "$deploymentDirectory\$targetFile"
 
 # 1. Run tests
 dotnet test $testProject
@@ -30,8 +31,8 @@ exitWithMessageOnError "Publish failed"
 
 # 3. Make zip file
 mkdir $deploymentDirectory -ErrorAction SilentlyContinue | Out-Null
-Write-Output "Compressing content from $deploymentTemp\* to $targetFile"
-Compress-Archive -Path $deploymentTemp\* -DestinationPath $targetFile
+Write-Output "Compressing content from $deploymentTemp\* to $targetFilePath"
+Compress-Archive -Path $deploymentTemp\* -DestinationPath $targetFilePath
 exitWithMessageOnError "Compression failed"
 
 # 4. Set package ref.
