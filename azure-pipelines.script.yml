@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - master
+      - prepare
 
 pool:
   vmImage: Ubuntu-16.04
