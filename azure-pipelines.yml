@@ -25,6 +25,7 @@ steps:
     publishWebProjects: false
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish artifact'
+  displayName: 'Publish Artifact'
   inputs:
-    PathtoPublish: '$(build.artifactsstagingdirectory)'
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    
