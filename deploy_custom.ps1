@@ -3,9 +3,14 @@ param(
     $deploymentSource = $PSScriptRoot,
     [Parameter(Mandatory = $false)]
     $deploymentDirectory = 'd:\home\data\SitePackages',
+    [Parameter(Mandatory = $false)]
     $deploymentTemp = $env:DEPLOYMENT_TEMP,
+    [Parameter(Mandatory = $false)]
     $project = "$deploymentSource\vandelay.web\vandelay.web.csproj",
-    $testProject = "$deploymentSource\vandelay.xunittests\vandelay.xunittests.csproj"
+    [Parameter(Mandatory = $false)]
+    $testProject = "$deploymentSource\vandelay.xunittests\vandelay.xunittests.csproj",
+    [Parameter(Mandatory = $false)]
+    [bool]$randomizePackageName = $true
 )
 $ErrorActionPreference = 'stop'
 $global:ProgressPreference = 'silentlycontinue'
@@ -18,7 +23,11 @@ function exitWithMessageOnError($errorMessage) {
 }
 
 $projectName = (split-path $project -Leaf).Replace('.csproj', '')
-$targetFile = "$($projectName)-$(Get-Date -Format FileDateTime).zip"
+$targetFile = if ($randomizePackageName) {
+    "$($projectName)-$(Get-Date -Format FileDateTime).zip"
+} else {
+    "$($projectName).zip"
+}
 $targetFilePath = "$deploymentDirectory\$targetFile"
 
 # 1. Run tests
@@ -30,7 +39,7 @@ dotnet publish --configuration Release --output $deploymentTemp $project
 exitWithMessageOnError "Publish failed"
 
 # 3. Make zip file
-mkdir $deploymentDirectory -ErrorAction SilentlyContinue | Out-Null
+New-Item -Path $deploymentDirectory -Type Directory -ErrorAction SilentlyContinue | Out-Null
 Write-Output "Compressing content from $deploymentTemp\* to $targetFilePath"
 Compress-Archive -Path $deploymentTemp\* -DestinationPath $targetFilePath
 exitWithMessageOnError "Compression failed"
