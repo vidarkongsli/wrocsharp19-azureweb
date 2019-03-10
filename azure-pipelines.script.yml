@@ -13,7 +13,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: deploy_custom.ps1
-    arguments: '-deploymentDirectory $(build.artifactstagingdirectory) -deploymentTemp $(Agent.WorkFolder)/vandelay.web -randomizePackageName $true'
+    arguments: '-deploymentDirectory $(build.artifactstagingdirectory) -deploymentTemp $(Agent.WorkFolder)/vandelay.web'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact'

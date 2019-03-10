@@ -8,9 +8,7 @@ param(
     [Parameter(Mandatory = $false)]
     $project = "$deploymentSource\vandelay.web\vandelay.web.csproj",
     [Parameter(Mandatory = $false)]
-    $testProject = "$deploymentSource\vandelay.xunittests\vandelay.xunittests.csproj",
-    [Parameter(Mandatory = $false)]
-    [bool]$randomizePackageName = $true
+    $testProject = "$deploymentSource\vandelay.xunittests\vandelay.xunittests.csproj"
 )
 $ErrorActionPreference = 'stop'
 $global:ProgressPreference = 'silentlycontinue'
@@ -23,11 +21,7 @@ function exitWithMessageOnError($errorMessage) {
 }
 
 $projectName = (split-path $project -Leaf).Replace('.csproj', '')
-$targetFile = if ($randomizePackageName) {
-    "$($projectName)-$(Get-Date -Format FileDateTime).zip"
-} else {
-    "$($projectName).zip"
-}
+$targetFile = "$($projectName)-$(Get-Date -Format FileDateTime).zip"
 $targetFilePath = "$deploymentDirectory\$targetFile"
 
 # 1. Run tests
