@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+      - master
+
+pool:
+  vmImage: Ubuntu-16.04
+
+steps:
+
+- task: PowerShell@2  
+  displayName: Run build script
+  inputs:
+    targetType: filePath
+    filePath: deploy_custom.ps1
+    arguments: '-deploymentDirectory $(build.artifactstagingdirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
